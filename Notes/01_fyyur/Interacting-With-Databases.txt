@@ -1,2 +1,123 @@
 Interacting with Databases
 
+Relational Databases
+Database attributes - 
+Persistence (allowing access later)
+Accessible by many users
+Store many data types
+Can handle multiple actions at once
+
+Relational popular vendors - MySQL, PostgreSQL, Oracle
+Nonrelational popular vendors - MongoDB, Perst, Cassandra
+
+For relational databases:
+All data is stored in tables
+Columns - Data types | Rows - Data
+Constraints and rules for data integrity
+
+Primary Keys - Unique Identifier for entire row, refers to one or more column
+Composite Key - Multiple columns, set of primary key columns
+Foreign Key - Maps 2 primary keys, primary key must be from other table
+
+SQL - Language for communicating with relational database
+Postgres
+INSERT, UPDATE, DELETE, SELECT, CREATE TABLE, ALTER TABLE, DROP TABLE,
+ADD COLUMN, DROP COLUMN, INNER JOIN, OUTER JOIN, GROUP BY, SUM, COUNT
+
+Client-Server Model - Client sends request to server, Server fulfills request and responds back
+Database treats web server as client, whole process is done via communication protocol
+
+TCP/IP, IP address identifies computer location, Port is location on computer where data is recieved
+Port 80: HTTP Requests, Port 5432: Default port for Postgres
+
+postgres Command line Applications
+sudo -u <username> -i | log in as particular user
+createdb <database_name> | Create new database
+dropdb <database_name> | Destroy a database
+dropdb <database_name> && createdb <database_name> | Reset a database
+
+psql: Interactive terminal application for interacting with postgres server | psql <dbname>
+Commands:
+\l | List all databases
+\c <dbname> | Connect to database
+\dt | Show database tables
+\d <tablename> | Describe table schema
+\q | Quit psql
+\? | Help
+
+pgAdmin | GUI for postgres
+
+DBAPI: Provides standard interface for programming language to talk to relational database server
+Examples - Nodejs, pyscopg2
+
+Code:
+import psycopg2
+
+## Establish a connection, starting a session
+conn = psycopg2.connect('dbname=todoapp_development user=amy')
+
+cursor = conn.cursor()
+
+## Open a cursor to perform database operations
+cur = conn.cursor()
+
+## drop any existing todos table
+cur.execute("DROP TABLE IF EXISTS todos;")
+
+## (re)create the todos table
+## (note: triple quotes allow multiline text in python)
+cur.execute("""
+  CREATE TABLE todos (
+    id serial PRIMARY KEY,
+    description VARCHAR NOT NULL
+  );
+""")
+
+## commit, so it does the executions on the db and persists in the db
+conn.commit()
+
+##Close connections
+cur.close()
+conn.close()
+
+String Interpolation
+Code:
+import psycopg2
+
+connection = psycopg2.connect('dbname=example')
+
+cursor = connection.cursor()
+
+cursor.execute('DROP TABLE IF EXISTS table2;')
+
+cursor.execute('''
+  CREATE TABLE table2 (
+    id INTEGER PRIMARY KEY,
+    completed BOOLEAN NOT NULL DEFAULT False
+  );
+''')
+
+cursor.execute('INSERT INTO table2 (id, completed) VALUES (%s, %s);', (1, True))
+
+SQL = 'INSERT INTO table2 (id, completed) VALUES (%(id)s, %(completed)s);'
+
+data = {
+  'id': 2,
+  'completed': False
+}
+cursor.execute(SQL, data)
+
+##Fetching Results
+cursor.execute('SELECT * FROM table2;')
+
+result = cursor.fetchall()
+print(result)
+
+##Other fetching methods
+cursor.fetchone()
+cursor.fetchmany(integer)
+
+connection.commit()
+
+connection.close()
+cursor.close()
