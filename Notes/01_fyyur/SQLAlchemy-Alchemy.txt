@@ -1,0 +1,44 @@
+SQLAlchemy Basics
+
+SQLAlchemy generates SQL statements while psycopg2 just directly sends SQL statements to database
+SQLAlchemy can use psycopg2 for communication
+-Stays on ORM level
+-Can run customized SQL code specific to database
+-Can write raw SQL to execute 
+
+Layers of SQLAlchemy
+1. DBAPI
+2. The Dialect
+3. The Connection Pool
+4. The Engine
+5. SQL Expressions
+6. SQLAlchemy ORM (optional)
+
+Dialect allows us to forget about the database system we are using (Ex. SQLite, Postgres)
+Connection Pool allows us to avoid opening and closing connections every data change, handles dropped connections, and avoid very small calls
+Engine is 1 of the 3 main layers for interacting with database, lowest level. Use it like a DBAPI
+SQL Expressions allows us to compose python objects to compose SQL expressions instead. Middle level.
+SQLAlchemy ORM lets you compose SQL expressions by building python classes of objects which map to tables in the database
+
+Mapping between tables and classes
+Tables map to classes
+Ex. 
+CREATE TABLE tweets (
+  id INTEGER PRIMARY KEY,
+  content VARCHAR(140) NOT NULL
+);
+maps to
+class Tweet:
+    def __init__(self, content);
+        self.content = content
+
+See flask-hello-app.py
+Database connection parts
+Ex. 'postgresql://myusername:mypassword@localhost:5432/mydatabase'
+dialect | username | password (optional) | host address | port | database name
+
+Instance of database
+db.Model: Ability to create and manipulate models
+db.session: Ability to create and manipulate transactions
+
+db.create_all(): Detects models and creates tables for them
